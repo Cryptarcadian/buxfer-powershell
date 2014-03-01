@@ -1,0 +1,2 @@
+# CRLF for Windows PowerShell
+*.ps1 text eol=crlf
