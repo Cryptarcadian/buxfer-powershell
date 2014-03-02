@@ -88,39 +88,40 @@ function Add-BuxferTransaction {
 		return
 	}
 	# Validate amounts, by type where appropriate
+	$Format = "{0:f2}"
 	if ($Amount -eq 0) {
 		Write-Error "Amount must not be zero"
 		return
 	} elseif ($Type -eq "Shared") {
 		if ($Amount -lt 0) {
-			$AmountString = "{0:N2}" -f $Amount
+			$AmountString = $Format -f $Amount
 		} else {
-			$AmountString = "{0:N2}" -f (-$Amount)
+			$AmountString = $Format -f (-$Amount)
 			Write-Warning "Only expenses can be shared, assuming '$Amount' was intended to be '$AmountString'"
 		}
 		$Text += " $($AmountString.Substring(1))"
 		$Text += " WITH: $($With -join ' ')"
 	} elseif ($Type -eq "Transfer") {
 		if ($Amount -gt 0) {
-			$AmountString = "{0:N2}" -f $Amount
+			$AmountString = $Format -f $Amount
 		} else {
-			$AmountString = "{0:N2}" -f (-$Amount)
+			$AmountString = $Format -f (-$Amount)
 			Write-Warning "Negative amounts cannot be transfered, assuming '$Amount' was intended to be '$AmountString'"
 		}
 		$Text += " $AmountString"
 	} elseif ($Type -eq "Expense") {
 		if ($Amount -lt 0) {
-			$AmountString = "{0:N2}" -f $Amount
+			$AmountString = $Format -f $Amount
 		} else {
-			$AmountString = "{0:N2}" -f (-$Amount)
+			$AmountString = $Format -f (-$Amount)
 			Write-Warning "Expense must be a negative amount, assuming '$Amount' was intended to be '$AmountString'"
 		}
 		$Text += " $($AmountString.Substring(1))"
 	} elseif ($Type -eq "Income") {
 		if ($Amount -gt 0) {
-			$AmountString = "{0:N2}" -f $Amount
+			$AmountString = $Format -f $Amount
 		} else {
-			$AmountString = "{0:N2}" -f (-$Amount)
+			$AmountString = $Format -f (-$Amount)
 			Write-Warning "Income must be a positive amount, assuming '$Amount' was intended to be '$AmountString'"
 		}
 		$Text += " +$AmountString"
@@ -128,10 +129,10 @@ function Add-BuxferTransaction {
 		# Guess at expense or income based on sign
 		if ($Amount -gt 0) {
 			$Type = "Income"
-			$Text += " +" + ("{0:N2}" -f $Amount)
+			$Text += " +" + ($Format -f $Amount)
 		} else {
 			$Type = "Expense"
-			$AmountString = "{0:N2}" -f $Amount
+			$AmountString = $Format -f $Amount
 			$Text += " $($AmountString.Substring(1))"
 		}
 	}
