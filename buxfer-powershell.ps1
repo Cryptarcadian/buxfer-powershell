@@ -48,7 +48,7 @@ function Get-BuxferAccounts {
 function Add-BuxferTransaction {
 	[CmdletBinding()]
 	param(
-		[Parameter(Mandatory=$true, Position=0)] [Float] $Amount,
+		[Parameter(Mandatory=$true, Position=0)] [Double] $Amount,
 		[Parameter(Mandatory=$true, ValueFromRemainingArguments=$true)] [String] $Description,
 		[ValidateSet("Expense", "Income", "Shared", "Transfer")] [String] $Type,
 		[ValidateSet("Pending", "Cleared")] [String] $Status,
