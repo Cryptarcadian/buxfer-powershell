@@ -7,7 +7,7 @@
 function Set-BuxferToken {
 	[CmdletBinding()]
 	param([Parameter(Mandatory=$true)] [String] $Token)
-	$PSDefaultParameterValues.Add("*-Buxfer*:Token", $Token)
+	$PSDefaultParameterValues["*-Buxfer*:Token"] = $Token
 }
 
 function New-BuxferToken {
