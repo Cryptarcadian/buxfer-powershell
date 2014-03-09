@@ -45,6 +45,18 @@ function Get-BuxferAccounts {
 	}
 }
 
+function Get-BuxferTags {
+	[CmdletBinding()]
+	param([String]$Token)
+	if (!$Token) {
+		$Token = New-BuxferToken
+	}
+	$Response = Invoke-RestMethod "https://www.buxfer.com/api/tags.json" -Method Post -Body @{ token = $Token }
+	if ($Response -and ($Response.response.status -eq "OK")) {
+		$Response.response.tags.'key-tag'
+	}
+}
+
 function Add-BuxferTransaction {
 	[CmdletBinding()]
 	param(
