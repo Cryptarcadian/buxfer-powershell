@@ -57,6 +57,57 @@ function Get-BuxferTags {
 	}
 }
 
+function Get-BuxferTransactions {
+	[CmdletBinding()]
+	param(
+		[DateTime] $DateStart,
+		[DateTime] $DateEnd,
+		[String] $Account,
+		[String] $Tag,
+		[String] $Contact,
+		[String] $Group,
+		[String] $Token,
+		# TODO: implement as true [CmdletBinding(SupportsShouldProcess=$true)]
+		[Switch] $WhatIf
+	)
+	if (!$Token) {
+		$Token = New-BuxferToken
+	}
+	$Request = @{ token = $Token }
+	if ($DateStart -or $DateEnd) {
+		if (!$DateStart) {
+			# Defaults to same as DateEnd
+			$DateStart = $DateEnd
+		}
+		if (!$DateEnd) {
+			# Defaults to today
+			$DateEnd = Get-Date
+		}
+		$Request["startDate"] = $DateStart.ToString("yyyy-MM-dd")
+		$Request["endDate"] = $DateEnd.ToString("yyyy-MM-dd")
+	}
+	@($Account, "accountName"),
+	@($Tag, "tagName"),
+	@($Contact, "contactName"),
+	@($Group, "groupName") | ForEach-Object {
+		if ($_[0]) {
+			$Request[$_[1]] = $_[0]
+		}
+	}
+	if ($WhatIf) {
+		$Request
+		return
+	}
+	$Response = Invoke-RestMethod "https://www.buxfer.com/api/transactions.json" -Method Post -Body $Request
+	if ($Response -and ($Response.response.status -eq "OK")) {
+		if ($Response.response.numTransactions -gt 25) {
+			# TODO: implement fetching additional pages of results
+			Write-Warning "Partial results ($($Response.response.transactions.Count) of $($Response.response.numTransactions) total)"
+		}
+		$Response.response.transactions."key-transaction"
+	}
+}
+
 function Add-BuxferTransaction {
 	[CmdletBinding()]
 	param(
