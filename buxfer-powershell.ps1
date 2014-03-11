@@ -67,6 +67,7 @@ function Get-BuxferTransactions {
 		[String] $Contact,
 		[String] $Group,
 		[String] $Token,
+		[Switch] $All,
 		# TODO: implement as true [CmdletBinding(SupportsShouldProcess=$true)]
 		[Switch] $WhatIf
 	)
@@ -98,13 +99,28 @@ function Get-BuxferTransactions {
 		$Request
 		return
 	}
-	$Response = Invoke-RestMethod "https://www.buxfer.com/api/transactions.json" -Method Post -Body $Request
-	if ($Response -and ($Response.response.status -eq "OK")) {
-		if ($Response.response.numTransactions -gt 25) {
-			# TODO: implement fetching additional pages of results
-			Write-Warning "Partial results ($($Response.response.transactions.Count) of $($Response.response.numTransactions) total)"
+	function Get-BuxferTransactionsBatch {
+		$Response = Invoke-RestMethod "https://www.buxfer.com/api/transactions.json" -Method Post -Body $Request
+		if ($Response -and ($Response.response.status -eq "OK")) {
+			$Response.response
 		}
-		$Response.response.transactions."key-transaction"
+	}
+	$Results = Get-BuxferTransactionsBatch
+	if ($Results.transactions) {
+		$Results.transactions."key-transaction"
+		$Total = $Results.numTransactions
+		$Limit = $Results.transactions.Count
+		if ($Total -gt $Limit) {
+			if ($All) {
+				$Pages = [Math]::Ceiling($Total/$Limit)
+				2..$Pages | ForEach-Object {
+					$Request["page"] = $_
+					(Get-BuxferTransactionsBatch).transactions."key-transaction"
+				}
+			} else {
+				Write-Warning "Partial results, returning $Limit of $Total total (use -All to get full results)"
+			}
+		}
 	}
 }
 
