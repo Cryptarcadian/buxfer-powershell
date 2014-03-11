@@ -108,7 +108,7 @@ function Get-BuxferTransactions {
 	$Results = Get-BuxferTransactionsBatch
 	if ($Results.transactions) {
 		$Results.transactions."key-transaction"
-		$Total = $Results.numTransactions
+		$Total = $Results.numTransactions -as [int]
 		$Limit = $Results.transactions.Count
 		if ($Total -gt $Limit) {
 			if ($All) {
