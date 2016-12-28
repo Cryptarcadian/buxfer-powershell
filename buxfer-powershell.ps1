@@ -41,7 +41,7 @@ function Get-BuxferAccounts {
 	}
 	$Response = Invoke-RestMethod "https://www.buxfer.com/api/accounts.json" -Method Post -Body @{ token = $Token }
 	if ($Response -and ($Response.response.status -eq "OK")) {
-		$Response.response.accounts.'key-account'
+		$Response.response.accounts.name
 	}
 }
 
@@ -53,7 +53,7 @@ function Get-BuxferTags {
 	}
 	$Response = Invoke-RestMethod "https://www.buxfer.com/api/tags.json" -Method Post -Body @{ token = $Token }
 	if ($Response -and ($Response.response.status -eq "OK")) {
-		$Response.response.tags.'key-tag'
+		$Response.response.tags.name
 	}
 }
 
