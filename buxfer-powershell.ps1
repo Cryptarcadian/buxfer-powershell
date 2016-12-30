@@ -219,11 +219,10 @@ function Add-BuxferTransaction {
 		$Text += " STATUS:$Status"
 	}
 	if ($Account) {
-		$Text += " ACCT:"
 		if ($Type -eq "Transfer") {
-			$Text += ($Account -join ",")
+			$Text += " FROM:" + ($Account -join " TO:")
 		} else {
-			$Text += $Account
+			$Text += " ACCT:" + $Account
 		}
 	}
 	if ($Tags) {
